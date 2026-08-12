@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday My Love!</title>
+    <style>
+        body { 
+            margin: 0; background: #000; color: #fff; text-align: center; 
+            font-family: "Pyidaungsu", "Myanmar Text", "Arial Unicode MS", sans-serif; 
+            overflow: hidden; /* Balloons များ အပြင်မထွက်စေရန် */
+            position: relative;
+        } 
+        canvas { position: fixed; top: 0; left: 0; z-index: -1; }
+        .content { position: relative; z-index: 10; padding: 20px; padding-top: 50px;}
+        
+        #text-display {
+            font-size: 50px;
+            color: #ff00de;
+            text-shadow: 0 0 10px #ff00de, 0 0 20px #ff00de;
+            min-height: 80px;
+            margin: 20px auto;
+            transition: opacity 0.5s ease;
+        }
+
+        #main-photo { width: 300px; height: 300px; border-radius: 50%; border: 5px solid #ff00de; object-fit: cover; box-shadow: 0 0 20px #ff00de; }
+        
+        /* Letter Box Style */
+        .text-box { 
+            color: #ff00de; font-size: 20px; font-weight: bold; margin: 20px auto; 
+            background: rgba(0,0,0,0.8); padding: 20px; border-radius: 15px; 
+            border: 2px solid #ff00de; max-width: 80%; min-height: 80px;
+            box-shadow: 0 0 15px #ff00de;
+        }
+
+        @media (max-width: 600px) {
+            #text-display { font-size: 30px; }
+            #main-photo { width: 80%; height: auto;}
+            .text-box { font-size: 16px; padding: 15px;}
+        }
+
+        /* 🎈 Balloons Style */
+        .balloon {
+            position: absolute;
+            bottom: -150px; /* စတင်မည့်နေရာ (အောက်ခြေအပြင်) */
+            opacity: 0.8;
+            border-radius: 50%;
+            z-index: 5;
+            animation: floatBalloons linear infinite;
+        }
+
+        /* Balloon မြောမည့် Animation */
+        @keyframes floatBalloons {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+            100% { transform: translateY(-120vh) rotate(20deg); opacity: 0; }
+        }
+
+        /* 🔊 Music Toggle Button Style */
+        #music-btn {
+            position: fixed; top: 20px; right: 20px; z-index: 100;
+            background: rgba(255, 0, 222, 0.2); border: 2px solid #ff00de;
+            color: #ff00de; font-size: 24px; padding: 10px; border-radius: 50%;
+            cursor: pointer; box-shadow: 0 0 10px #ff00de;
+            transition: all 0.3s;
+        }
+        #music-btn:hover { background: rgba(255, 0, 222, 0.5); scale: 1.1; }
+
+        /* ✉️ Open Letter Button Style */
+        #letter-btn {
+            display: none; /* စစချင်း ဖျောက်ထားမည် */
+            margin: 30px auto; padding: 12px 25px; 
+            background: #ff00de; color: white; border: none; border-radius: 25px; 
+            font-size: 18px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 0 15px #ff00de;
+            transition: all 0.3s;
+            z-index: 20;
+        }
+        #letter-btn:hover { scale: 1.05; background: #e600c7; }
+
+        /* 📃 Letter Modal (Pop-up) Style */
+        #letter-modal {
+            display: none; /* စစချင်း ဖျောက်ထားမည် */
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            background: rgba(10, 10, 10, 0.95); border: 2px solid #ff00de; 
+            padding: 30px; border-radius: 20px; max-width: 85%; width: 400px;
+            z-index: 200; color: white; box-shadow: 0 0 30px #ff00de;
+            text-align: left;
+        }
+        #letter-modal h3 { text-align: center; color: #ff00de; margin-top: 0; }
+        #letter-modal p { line-height: 1.6; font-size: 17px; }
+        #close-letter {
+            display: block; margin: 20px auto 0;
+            background: #ff00de; color: white; border: none; padding: 8px 20px; 
+            border-radius: 5px; cursor: pointer; font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+    <audio id="myAudio" loop>
+        <source src="love.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- 🔊 Music Toggle Button -->
+    <button id="music-btn" onclick="toggleMusic()">🔊</button>
+
+    <canvas id="c"></canvas>
+    
+    <div class="content">
+        <h1 style="color:#ff00de; font-size: 28px;">🎂Happy Birthday My Sweet Heart🎂💞💖! </h1>
+        
+        <!-- text-display id ကို မှန်အောင် ပြင်ထားပါတယ် -->
+        <div id="text-display">Click anywhere to start!</div>
+        
+        <img id="main-photo" src="img1.jpg">
+        
+        <!-- ✉️ Open Letter Button -->
+        <button id="letter-btn" onclick="toggleLetter()">Open Letter ✉️</button>
+    </div>
+
+    <!-- 📃 Letter Modal -->
+    <div id="letter-modal">
+        <h3>To My Dearest ❤️</h3>
+        <p>
+            ဒီနေ့မှာ ကျရောက်တဲ့ မွေးနေ့မှသည် အနာဂတ်နေ့ရက်တိုင်းမှာ ပျော်ရွှင်ချမ်းမြေ့ပါစေ။
+            ကိုယ့်ဘဝရဲ့ အရေးအပါဆုံးလူသားလေးမို့ အမြဲတမ်း ဂရုစိုက်ပြီး ချစ်နေမှာပါ။
+            ကိုယ်တိုင်ဖန်တီးထားတဲ့ ဒီလက်ဆောင်လေးကို သဘောကျလိမ့်မယ်လို့ မျှော်လင့်ပါတယ်။
+            ချစ်တယ်နော် အမြဲတမ်းပါပဲ။ 💞💞💞
+        </p>
+        <button id="close-letter" onclick="toggleLetter()">Close</button>
+    </div>
+
+    <script>
+        // Matrix Heart Rain
+        const c = document.getElementById("c");
+        const ctx = c.getContext("2d");
+        c.width = window.innerWidth; c.height = window.innerHeight;
+        const drops = Array(Math.floor(c.width/20)).fill(1);
+        
+        function draw() {
+            ctx.fillStyle = "rgba(0,0,0,0.05)"; 
+            ctx.fillRect(0,0,c.width,c.height);
+            ctx.fillStyle = "#ff00de"; 
+            ctx.font = "20px Arial";
+            drops.map((y, i) => {
+                ctx.fillText("💖", i*20, y*20);
+                if(y*20 > c.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            });
+        }
+        setInterval(draw, 50);
+       
+        // Data
+        const images = ["img1.jpg", "img2.jpg", "img3.jpg", "img4.jpg", "img5.jpg", "img6.jpg", "img7.jpg", "img8.jpg", "img9.jpg", "img10.jpg", "img11.jpg", "img12.jpg", "img13.jpg", "img14.jpg"];
+        const texts = [
+            "နှစ်ယောက်တူတူ အိုမင်းသွားချင်တယ် 😍",
+            "ကျန်တဲ့ဘဝမှာ အတူတူ ကြိုးစားကျော်ဖြတ်ကြမယ်နော်👫 ",
+            "မင်းရဲ့ အပြုံးလေးတွေက ကိုယ့်ရဲ့ ခွန်အားတွေပါပဲ💪💪💪။ ",
+            "အတူတူ ရှိနေပေးလို့ ကျေးဇူးတင်ပါတယ် ချစ်ရယ်👨‍❤️‍👨👩‍❤️‍💋‍👨...",
+            "မွေးနေ့မှာ ပျော်ရွှင်ပါစေ အချစ်ဆုံးရေ👑👑👑... ",
+            "ကိုယ့်ဘဝရဲ့ အရေးအပါဆုံးလူသားလေးပါ💖💕💞...",
+            "ဒီထက်ပိုတဲ့ မွေးနေ့တိုင်းမှာလည်း အတူရှိနေမယ်နော်👫👫👫...",
+            "ချစ်တယ်ဆိုတာ ဒီထက်ပိုပြီး နားလည်အောင် ပြသွားပါ့မယ်💞💞💞...",
+            "အတူတူ ခရီးတွေ အများကြီး သွားကြမယ်နော်🌎🌍🌏...",
+            "ကမ္ဘာကြီးက ဘယ်လောက်ပဲ ပင်ပန်းပါစေ... မင်းရှိရင် ကိုယ်ပြုံးနိုင်ပါတယ်✨✨✨...",
+            "အခုလိုပဲ အမြဲတမ်း ချစ်နေပေးမှာပါ💖💖💖...",
+            "မွေးနေ့မှာ လိုချင်တဲ့ဆုတောင်းတွေ အကုန်ပြည့်ဝပါစေ🙏🙏🙏...",
+            "ကိုယ့်ရဲ့ ကမ္ဘာလေးထဲမှာ အမြဲတမ်း နေရာယူထားပေးတဲ့သူ🤟🤟🤟...",
+            "ချစ်တယ်နော် အမြဲတမ်းပါပဲ💖💖💖... "
+        ];
+
+        let i = 0;
+        let isStarted = false; 
+        const imgElement = document.getElementById("main-photo");
+        const textElement = document.getElementById("text-display");
+        const letterBtn = document.getElementById("letter-btn");
+        const audio = document.getElementById("myAudio");
+
+        // Typewriter Effect
+        function typeWriter(text, index, callback) {
+            if (index < text.length) {
+                textElement.innerHTML = text.substring(0, index + 1);
+                setTimeout(() => typeWriter(text, index + 1, callback), 100);
+            } else {
+                setTimeout(callback, 2000); 
+            }
+        }
+
+        // Slide Show
+        function startSlide() {
+            imgElement.src = images[i];
+            typeWriter(texts[i], 0, () => {
+                i = (i + 1);
+                
+                // Slide အကုန်လုံး ပြီးသွားရင် Open Letter Button ကို ပေါ်စေရန်
+                if (i < images.length) {
+                    startSlide();
+                } else {
+                    // Slide တွေပြီးရင် စာသားကို Perfect Message တစ်ခု ပြထားမည်
+                    textElement.innerHTML = "Happy Birthday Again! ❤️";
+                    letterBtn.style.display = "block"; // Open Letter Button ပေါ်လာစေရန်
+                }
+            });
+        }
+
+        // Countdown Logic
+        const messages = ["3", "2", "1", "HAPPY", "🎂BIRTHDAY🎂🎂", "💖 My Sweet Heart💞💖"];
+        let msgIndex = 0;
+        
+        function showSequentialMessage() {
+            if (msgIndex < messages.length) {
+                textElement.innerText = messages[msgIndex];
+                textElement.style.opacity = 1;
+                
+                setTimeout(() => {
+                    textElement.style.opacity = 0;
+                    msgIndex++;
+                    setTimeout(showSequentialMessage, 500);
+                }, 1000);
+            } else {
+                textElement.style.opacity = 1;
+                startSlide(); // Slide စရန်
+                startBalloons(); // Balloons စရန်
+            }
+        }
+
+        // Click to Start
+        document.body.addEventListener('click', function(e) {
+            // Music Button သို့မဟုတ် Letter Button ကို နှိပ်ရင် Start မလုပ်စေရန်
+            if (e.target.id === 'music-btn' || e.target.id === 'letter-btn' || e.target.id === 'close-letter') return;
+
+            if (!isStarted) {
+                isStarted = true;
+                audio.play();
+                showSequentialMessage();
+            }
+        });
+
+        // 🎈 Balloons Logic
+        function createBalloon() {
+            const balloon = document.createElement("div");
+            balloon.className = "balloon";
+            
+            // Random အရွယ်အစား
+            const size = Math.floor(Math.random() * 40) + 30 + "px";
+            balloon.style.width = size;
+            balloon.style.height = size;
+            
+            // Random အရောင် (Pink shades)
+            const colors = ["#ff00de", "#ff66e7", "#ffb3f3", "#ff0055"];
+            balloon.style.background = colors[Math.floor(Math.random() * colors.length)];
+            
+            // Random စတင်မည့် x location
+            balloon.style.left = Math.random() * 95 + "%";
+            
+            // Random မြောမည့်အချိန် (Duration)
+            balloon.style.animationDuration = Math.random() * 5 + 7 + "s";
+            
+            document.body.appendChild(balloon);
+            
+            // Animation ပြီးရင် ဖျက်ပစ်ရန်
+            setTimeout(() => { balloon.remove(); }, 12000);
+        }
+
+        function startBalloons() {
+            // 0.8 စက္ကန့်တိုင်း Balloon အသစ်တစ်ခု ဆောက်မည်
+            setInterval(createBalloon, 800);
+        }
+
+        // 🔊 Music Toggle Logic
+        function toggleMusic() {
+            const musicBtn = document.getElementById("music-btn");
+            if (audio.paused) {
+                audio.play();
+                musicBtn.innerText = "🔊";
+            } else {
+                audio.pause();
+                musicBtn.innerText = "🔇";
+            }
+        }
+
+        // 📃 Open/Close Letter Logic
+        function toggleLetter() {
+            const modal = document.getElementById("letter-modal");
+            modal.style.display = (modal.style.display === "block") ? "none" : "block";
+        }
+    </script>
+</body>
+</html>
